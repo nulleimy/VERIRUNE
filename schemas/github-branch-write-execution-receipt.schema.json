@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/nulleimy/OATHDO/schemas/github-branch-write-execution-receipt.schema.json",
+  "title": "OATHDO GitHub Branch Write Execution Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "receipt_id",
+    "schema_version",
+    "executor",
+    "grant_id",
+    "subject",
+    "branch",
+    "old_head_sha",
+    "new_head_sha",
+    "operation_digest",
+    "action",
+    "target",
+    "file_mode",
+    "pre_state",
+    "payload_sha256",
+    "payload_bytes",
+    "post_state",
+    "result_bytes"
+  ],
+  "properties": {
+    "receipt_id": {
+      "type": "string",
+      "pattern": "^github-branch-write-execution-v1:[0-9a-f]{64}$"
+    },
+    "schema_version": {"const": 1},
+    "executor": {"const": "github-pr-head-v1"},
+    "grant_id": {
+      "type": "string",
+      "pattern": "^write-grant-v1:[0-9a-f]{64}$"
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "pull_request", "head_sha", "change_digest"],
+      "properties": {
+        "repository": {"type": "string", "minLength": 1},
+        "pull_request": {"type": "integer", "minimum": 1},
+        "head_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "change_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "branch": {"type": "string", "minLength": 1},
+    "old_head_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "new_head_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "operation_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "action": {"enum": ["create", "update", "append", "update_or_create"]},
+    "target": {"type": "string", "minLength": 1},
+    "file_mode": {"enum": ["100644", "100755"]},
+    "pre_state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["exists", "sha256"],
+      "properties": {
+        "exists": {"type": "boolean"},
+        "sha256": {
+          "anyOf": [
+            {"type": "null"},
+            {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+          ]
+        }
+      }
+    },
+    "payload_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "payload_bytes": {"type": "integer", "minimum": 0},
+    "post_state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["exists", "sha256"],
+      "properties": {
+        "exists": {"const": true},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "result_bytes": {"type": "integer", "minimum": 0}
+  }
+}
